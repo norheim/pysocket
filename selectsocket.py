@@ -22,6 +22,7 @@ class ServerKeeper(threading.Thread):
         self.alive = True
         self.new_connection = False
         self.client_list = []
+        self.buffer = []
 
         threading.Thread.__init__(self)
         self.start()
@@ -70,6 +71,16 @@ class ServerKeeper(threading.Thread):
         return
 
     def tellClients(self, message):
+        if not self.new_connection:
+            self.buffer.append(message)
+        else:
+            while len(self.buffer) > 0:
+                self.__tellClients(self.buffer.pop(0))
+            self.__tellClients(message)
+
+    # private function,encodes the message and sends
+    # it over the socket
+    def __tellClients(self, message):
         encoded_message = bytearray([0b10000001, len(message)])
         # append the data bytes
         for d in bytearray(message):
