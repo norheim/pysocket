@@ -28,7 +28,7 @@ class ServerKeeper(threading.Thread):
         self.start()
 
     def run(self):
-        self.s.bind(('', 2005))
+        self.s.bind(('', self.port))
         self.s.listen(5)
         print "Listening on port 2005"
 
